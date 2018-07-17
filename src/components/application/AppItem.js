@@ -99,7 +99,14 @@ class AppItem extends Component {
               destroyOnClose
             >
               <div>
-                <Avatar src={itemData.pic} />
+                <img
+                  alt=""
+                  src={itemData.pic}
+                  style={{
+                    height: "100px",
+                    marginBottom: "20px"
+                  }}
+                />
                 <p>name: {itemData.name}</p>
                 <p>location: {itemData.location}</p>
                 <p>time: {new Date(itemData.time).toLocaleDateString()}</p>

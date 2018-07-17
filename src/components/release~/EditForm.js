@@ -93,28 +93,28 @@ class EditForm extends Component {
     });
   };
 
-  handleUpload(event) {
-    let formData = new FormData();
-    var pic = document.getElementById("upload").files[0];
-    formData.append("pic", pic);
-    formData.append("type", this.props.type);
-    formData.append("id", this.state.id);
-    axios
-      .post("/upload", {
-        // headers: {
-        //   content: "multipart/form-data"
-        // },
-        body: formData
-      })
-      .then(({ data }) => {
-        console.log(data);
-        if (data.status === 200) {
-          Modal.info({ content: data.message });
+  handleUpload = () => {
+    let pic = document.forms["form1"].pic;
+    let data = new FormData();
+    console.log(this.state.id);
+    data.append("pic", pic.files[0]);
+    data.append("id", this.state.id);
+    data.append("type", this.props.type);
+    axios.post("/upload", data).then(({ data }) => {
+      console.log(data);
+      if (data.status === 200) {
+        Modal.info({ content: data.message });
+        if (this.props.type === 1) {
+          this.props.handleFoundsRefresh();
         } else {
-          Modal.error({ content: data.message });
+          this.props.handleLostsRefresh();
         }
-      });
-  }
+        this.handleSetEditVisible();
+      } else {
+        Modal.error({ content: data.message });
+      }
+    });
+  };
 
   render() {
     const { getFieldDecorator } = this.props.form;
@@ -149,15 +149,23 @@ class EditForm extends Component {
 
     return (
       <div>
-        <Input
-          id="upload"
-          name="file"
-          type="file"
-          accept="image/*"
-          onChange={event => {
-            this.handleUpload(event);
+        <img
+          alt=""
+          src={this.state.formData.pic}
+          style={{
+            height: "100px",
+            margin: "0px 0px 20px 134px"
           }}
         />
+        <form name="form1" style={{ marginLeft: "134px" }}>
+          <input
+            name="pic"
+            type="file"
+            accept="image/*"
+            onChange={this.handleUpload}
+          />
+        </form>
+
         <Form
           onSubmit={this.handleSubmit}
           className="App-form"

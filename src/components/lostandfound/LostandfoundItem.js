@@ -80,7 +80,14 @@ class LostandfoundItem extends Component {
               destroyOnClose
             >
               <div>
-                <Avatar src={data.pic} />
+                <img
+                  alt=""
+                  src={data.pic}
+                  style={{
+                    height: "100px",
+                    marginBottom: "20px"
+                  }}
+                />
                 <p>name: {data.name}</p>
                 <p>location: {data.location}</p>
                 <p>time: {new Date(data.time).toLocaleDateString()}</p>

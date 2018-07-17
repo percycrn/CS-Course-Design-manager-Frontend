@@ -9,6 +9,7 @@ class Lostandfound extends Component {
     found: [],
     lost: [],
     data: [],
+    search: [],
     type: 1,
     APName: "apply"
   };
@@ -18,6 +19,70 @@ class Lostandfound extends Component {
   handleLostData = e => {
     this.setState({ data: this.state.lost, type: 0, APName: "prompt" });
   };
+
+  handleSearchData(source) {
+    if (source === "") {
+      if (this.state.type === 1) {
+        this.setState({ data: this.state.found });
+      } else {
+        this.setState({ data: this.state.lost });
+      }
+      return;
+    }
+    // 获得regs
+    var i, l, j, m, pattern, k, n, reg;
+    var regs = [];
+    var accuracy = 1; // 越大越精确
+    if (source.length > accuracy) {
+      for (i = source.length, l = source.length - 1; i >= l; i--) {
+        for (j = 0, m = source.length - i + 1; j < m; j++) {
+          pattern = ".*";
+          for (k = 1, n = i; k <= n; k++) {
+            pattern = pattern + source.charAt(j + k - 1) + ".*";
+          }
+          console.log(pattern);
+          reg = new RegExp(pattern);
+          regs.push(reg);
+        }
+      }
+    } else {
+      for (i = source.length, l = 1; i >= l; i--) {
+        for (j = 0, m = source.length - i + 1; j < m; j++) {
+          pattern = ".*";
+          for (k = 1, n = i; k <= n; k++) {
+            pattern = pattern + source.charAt(j + k - 1) + ".*";
+          }
+          console.log(pattern);
+          reg = new RegExp(pattern);
+          regs.push(reg);
+        }
+      }
+    }
+    // 初始化
+    this.setState({ search: [] });
+    if (this.state.type === 1) {
+      this.setState({ data: this.state.found });
+    } else {
+      this.setState({ data: this.state.lost });
+    }
+    var data = this.state.data;
+    // 匹配
+    for (i = 0, l = data.length; i < l; i++) {
+      if (this.checkEquivalency(data[i], regs)) {
+        this.state.search.push(data[i]);
+      }
+    }
+    this.setState({ data: this.state.search });
+  }
+
+  checkEquivalency(target, regs) {
+    for (var i = 0, l = regs.length; i < l; i++) {
+      if (regs[i].test(target.name)) {
+        return true;
+      }
+    }
+    return false;
+  }
 
   componentWillMount() {
     axios.get(`/users/${this.props.userId}/found/other`).then(({ data }) => {
@@ -48,7 +113,7 @@ class Lostandfound extends Component {
               </Button.Group>
               <Search
                 placeholder="input search text"
-                onSearch={value => console.log(value)}
+                onSearch={value => this.handleSearchData(value)}
                 style={{ width: "300px", marginLeft: "16px", height: "30px" }}
               />
             </div>
